@@ -1,10 +1,18 @@
-const express = require('express');
-const app = express();
+const app = require('express')();
+const http = require('http').Server(app);
+const io = require('socket.io')(http);
 const port = process.env.PORT || 4000;
 
 app.get('/', (req, res) => {
-	res.send('<h1>Home page</h1>');
-})
-app.listen(port);
+	res.sendFile(__dirname + '/index.html');
+});
+
+io.on('connection', (socket) => {
+	socket.on('chat message', msg => {
+		io.emit('chat message', msg);
+	});
+});
+
+http.listen(port);
 
 console.log(`Server is running at port ${port}`);
